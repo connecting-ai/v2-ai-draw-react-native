@@ -17,7 +17,8 @@ import {
   ColorScreen,
   UploadInputScreen,
   UploadScreen,
-  CameraInputScreen
+  CameraInputScreen,
+  SettingsScreen
 } from './src/screens'
 
 const Stack = createStackNavigator()
@@ -45,6 +46,7 @@ export default function App() {
           <Stack.Screen name="UploadInputScreen" component={UploadInputScreen} />
           <Stack.Screen name="UploadScreen" component={UploadScreen} />
           <Stack.Screen name="CameraInputScreen" component={CameraInputScreen} />
+          <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
           <Stack.Screen
             name="ResetPasswordScreen"
             component={ResetPasswordScreen}

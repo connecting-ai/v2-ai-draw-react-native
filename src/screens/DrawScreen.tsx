@@ -36,7 +36,7 @@ import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 
 
-export default function DrawScreen({ navigation }:any) {
+export default function DrawScreen({ navigation, route }:any) {
   const { width, height } = Dimensions.get("window");
 
   const paletteColors = ["red", "green", "blue", "yellow"];
@@ -66,25 +66,69 @@ export default function DrawScreen({ navigation }:any) {
   const gm = new GestureManager({ pan, tap }, paths, setPaths, stamps, setStamps, circles, setCircles);
   gm.setTool(Tools.Pencil);
 
+  const delay = (ms: any) => new Promise(res => setTimeout(res, ms));
+
+  const play2 = async () => {
+    await delay(2000)
+    
+    if(route && route.params && route.params.keywords && !image) {
+      console.log('keywords', route.params.keywords)
+      gm.playPrompt(ref.current as any, route.params.keywords).then(async ({res, prompt}:any) => {
+        //gm.canvas?.drawImage(img, 0,0);
+        const skdata = await Skia.Data.fromURI(res)
+        const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
+        ref.current?.redraw();
+        setImage(image);
+        setPrompt(prompt[1]);
   
+        // Alert.prompt(prompt[0], prompt[1], [
+        //   {
+        //       onPress: str => console.log('Entered string: ' + str),
+        //   },
+        // ]
+        // );
+      });
+    }
+  }
+  useEffect(() => {
+    play2()
+  })
 
 
   const play = () => {
     gm.play(ref.current as any).then(async ({res, prompt}:any) => {
       //gm.canvas?.drawImage(img, 0,0);
-      const skdata = await Skia.Data.fromURI(res)
-      const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
-      ref.current?.redraw();
-      setImage(image);
+      // console.log('res')
+      // try {
+      //   const skdata = await Skia.Data.fromURI(res)
+      //   console.log('skdata')
+      // }
+      // catch (e) {
+      //   console.log('ERR', e)
+      // }
+      // const skdata = await Skia.Data.fromURI(res)
+      // console.log('skdata')
+
+      // const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
+      // console.log('image')
+      // ref.current?.redraw();
+      // console.log('image 2')
+
+      // setImage(image);
       setPrompt(prompt[1]);
       console.log(prompt)
 
-      Alert.prompt(prompt[0], prompt[1], [
-        {
-            onPress: str => console.log('Entered string: ' + str),
-        },
-      ]
-      );
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'SettingsScreen', params:{ prompt: prompt[0]} }],
+      })
+
+      // Alert.prompt(prompt[0], prompt[1], [
+      //   {
+      //       onPress: str => console.log('Entered string: ' + str),
+      //   },
+      // ]
+      // );
     });
   }
 

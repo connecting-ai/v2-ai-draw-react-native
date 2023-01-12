@@ -1,5 +1,9 @@
 export const IMAGE_WIDTH = 1024;
 export const IMAGE_HEIGHT = 1024;
-export const STABLE_DIFFUSION_URL = "https://ai_prod.webaverse.studio/predictions";
-export const CLIP_URL = "https://ai_dev.webaverse.studio/predictions";
+export const STABLE_DIFFUSION_URL = "http://ai_prod.webaverse.studio/predictions";
+export const CLIP_URL = "http://ai_dev.webaverse.studio/predictions";
 export const IN_PAINT_URL = "/api/inpaint";
+export const AWS_ACCESS_ID = "AKIA3CPVZVDV3Q2MH3UH";
+export const AWS_SECRET_KEY = "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";
+export const AWS_REGION = "us-east-1";
+export const AWS_BUCKET = "play-abeer.eventme.co";

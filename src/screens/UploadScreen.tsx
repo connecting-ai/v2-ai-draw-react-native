@@ -34,7 +34,9 @@ import BackButton from "../components/BackButton";
 import Background from "../components/Background";
 import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
-
+import Header from "../components/Header";
+import Logger from '../logger'
+import { uploadToS3 } from '../aws'
 
 export default function ColorScreen({ navigation, route }:any) {
   const { width, height } = Dimensions.get("window");
@@ -52,6 +54,7 @@ export default function ColorScreen({ navigation, route }:any) {
   const [image, setImage] = useState<SkImage>();
   const ref = useCanvasRef();
   const [prompt, setPrompt] = useState('');
+  const [status, setStatus] = useState('');
 
 
 
@@ -70,16 +73,33 @@ export default function ColorScreen({ navigation, route }:any) {
 
 
   async function play() {
+    Logger.setLog('Loading...')
     await delay(2000)
+    setInterval(() => setStatus(Logger.getLog()), 500);
     // console.log(Skia)
     let image = route.params.image
     gm.uploadPrompt(ref.current as any, image).then(async ({res, prompt}:any) => {
       //gm.canvas?.drawImage(img, 0,0);
-      const skdata = await Skia.Data.fromURI(res)
-      const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
-      ref.current?.redraw();
-      setImage(image);
-      setPrompt(prompt[1]);
+      try {
+
+        Logger.setLog('Uploading to S3')
+        const S3_URL = await uploadToS3(res)
+        console.log('S3_URL', S3_URL)
+        Logger.setLog('Uploaded to S3')
+        
+        const skdata = await Skia.Data.fromURI(S3_URL)
+        const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
+
+        ref.current?.redraw();
+        setImage(image);
+        Logger.setLog('Drawing Image on Canvas')
+
+        setPrompt(prompt[1]);
+        
+        Logger.setLog('')
+      } catch (e) {
+        console.log('Err', e)
+      }
 
       // Alert.prompt(prompt[0], prompt[1], [
       //   {
@@ -115,11 +135,19 @@ export default function ColorScreen({ navigation, route }:any) {
 
   const delay = (ms: any) => new Promise(res => setTimeout(res, ms));
 
+  function getStatus() {
+    const interval = setInterval(() => setStatus(Logger.getLog()), 500);
+    return () => {
+      clearInterval(interval);
+    };
+  }
+
   useEffect(() => {
-    if(!image) {
+    getStatus()
+    if(!image && !status) {
       play()
     }
-  });
+  })
 
   return (
     <>
@@ -201,7 +229,13 @@ export default function ColorScreen({ navigation, route }:any) {
                   </TouchableOpacity>
                 ))}
               </Animated.View>
-              <View style={styles.swatchContainer}>
+              {status ?
+                <View style={styles.statusContainer}>
+                  <Header>Generating image, please wait ...</Header>
+                  <Text>Status: {status}</Text>
+                </View>
+                :
+                <View style={styles.swatchContainer}>
                 <TouchableOpacity
                   onPress={() => {
                     paletteVisible.value !== true
@@ -257,7 +291,8 @@ export default function ColorScreen({ navigation, route }:any) {
                 </TouchableOpacity>
 
 
-              </View>
+                </View>
+              }
             </View>
           </View>
         </View>
@@ -268,6 +303,14 @@ export default function ColorScreen({ navigation, route }:any) {
 }
 
 const styles = StyleSheet.create({
+  statusContainer: {
+    flexDirection: "column",
+    flex: 1,
+    marginLeft: 15,
+    // padding: 10,
+    // justifyContent: "center",
+    // alignItems: "center",
+  },
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),

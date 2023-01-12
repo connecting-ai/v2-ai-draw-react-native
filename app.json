@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "rn-skia-draw",
-    "slug": "rn-skia-draw",
+    "slug": "aidraw",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,30 +18,37 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.abeersaqib.rnskiadraw"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.abeersaqib.rnskiadraw"
+      "package": "com.abeersaqib.rnskiadraw",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "3aa0cc94-7d38-431d-8782-904d08923e98"
+        "projectId": "d382200e-c3e4-4946-a94b-65298393e85e"
       }
     },
-        "plugins": [
+    "plugins": [
       [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "owner": "mujabmuneeb"
   }
 }

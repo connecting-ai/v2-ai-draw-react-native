@@ -5,7 +5,7 @@ import { CLIP_URL, STABLE_DIFFUSION_URL } from "./constants";
 import { b64toBlob } from "./helpers";
 // import RNFS from 'react-native-fs';
 import * as FileSystem from 'expo-file-system';
-
+import Logger from './logger'
   
 export class GestureManager {
     activeTool = null
@@ -25,7 +25,7 @@ export class GestureManager {
         this.setStamps = setStamps;
 
         this.pan = pan
-        .onStart((g) => {
+        .onStart((g: any) => {
         if (this.activeTool === Tools.Pencil) {
             const newPaths = [...paths];
             newPaths[paths.length] = {
@@ -36,7 +36,7 @@ export class GestureManager {
             setPaths(newPaths);
         }
         })
-        .onUpdate((g) => {
+        .onUpdate((g: any) => {
         if (this.activeTool === Tools.Pencil) {
             const index = paths.length - 1;
             const newPaths = [...paths];
@@ -46,7 +46,7 @@ export class GestureManager {
             }
         }
         })
-        .onTouchesUp((g) => {
+        .onTouchesUp((g: any) => {
         if (this.activeTool === Tools.Pencil) {
             const newPaths = [...paths];
             setPaths(newPaths);
@@ -57,7 +57,7 @@ export class GestureManager {
 
 
         this.tap = tap
-        .onStart((g) => {
+        .onStart((g: any) => {
         if (this.activeTool === Tools.Stamp) {
             setStamps([
             ...stamps,
@@ -115,31 +115,31 @@ export class GestureManager {
         console.log('Play clicked');
         const prompt = await this.getPrompt(ref) as any;
         console.log('prompt', prompt)
-        const image = ref?.makeImageSnapshot();
-        if (image) {          
-          const dataUrl = image.encodeToBase64();
-          const response = await axios.post(
-            STABLE_DIFFUSION_URL,
-            {
-              input: {
-                input: `data:image/png;base64,${dataUrl}`,
-                prompts: prompt[0],
-                strength: .85,
-                guidance_scale: 7.5,
-                split: 'none',
-                req_type: 'tile',
-              },
-            },
-            {
-              headers: { "Access-Control-Allow-Origin": "*" },
-              responseType: 'json',
-            }
-          );
+        // const image = ref?.makeImageSnapshot();
+        // if (image) {          
+          // const dataUrl = image.encodeToBase64();
+          // const response = await axios.post(
+          //   STABLE_DIFFUSION_URL,
+          //   {
+          //     input: {
+          //       input: `data:image/png;base64,${dataUrl}`,
+          //       prompts: prompt[0],
+          //       strength: .85,
+          //       guidance_scale: 7.5,
+          //       split: 'none',
+          //       req_type: 'tile',
+          //     },
+          //   },
+          //   {
+          //     headers: { "Access-Control-Allow-Origin": "*" },
+          //     responseType: 'json',
+          //   }
+          // );
 
-          const res = response.data.output.file[0][0]
+          // const res = response.data.output.file[0][0]
           // return {res, prompt:['', '']};
-          return {res, prompt};
-        }
+          return {res: null, prompt};
+        // }
     }
 
     async playPrompt(ref: SkiaView, keyword: string){
@@ -175,6 +175,7 @@ export class GestureManager {
 
   async uploadPrompt(ref: SkiaView, uploadedImage: string){
     console.log('Play clicked');
+    Logger.setLog('Running Play function')
     // const prompt = await this.getPrompt(ref) as any;
     // console.log('prompt', prompt)
     const image = uploadedImage
@@ -188,49 +189,74 @@ export class GestureManager {
 
     // const image = ref?.makeImageSnapshot();
 
-    if (image) {          
-      const dataUrl = await FileSystem.readAsStringAsync(uploadedImage, { encoding: 'base64' });
-
-      const response1 = await axios.post(
-        CLIP_URL,
-        {
-          input: {
-            input: `data:image/png;base64,${dataUrl}`,
-            mode: 'best',
+    if (image) {      
+      Logger.setLog('Getting dataURL')
+      try {
+        const dataUrl = await FileSystem.readAsStringAsync(uploadedImage, { encoding: 'base64' });
+        Logger.setLog('Fetched dataURL')
+        Logger.setLog('Getting Prompt')
+  
+        let response1: any;
+        try {
+  
+        response1 = await axios.post(
+          CLIP_URL,
+          {
+            input: {
+              input: `data:image/png;base64,${dataUrl}`,
+              mode: 'best',
+            },
           },
-        },
-        {
-          headers: { "Access-Control-Allow-Origin": "*" },
-          responseType: 'json',
+          {
+            headers: { "Access-Control-Allow-Origin": "*" },
+            responseType: 'json',
+          }
+        );
+  
+        } catch(e) {
+          Logger.setLog('Error: Prompt Request Failed')
         }
-      );
-
-      console.log(response1.data.output);
-      const prompt = [response1.data.output.prompt.split(',')[0], response1.data.output.prompt];
-
-      // const dataUrl = image.encodeToBase64();
-      const response = await axios.post(
-        STABLE_DIFFUSION_URL,
-        {
-          input: {
-            input: `data:image/png;base64,${dataUrl}`,
-            prompts: prompt[0],
-            strength: .85,
-            guidance_scale: 7.5,
-            split: 'none',
-            req_type: 'tile',
-          },
-        },
-        {
-          headers: { "Access-Control-Allow-Origin": "*" },
-          responseType: 'json',
+  
+        console.log(response1.data.output);
+        const prompt = [response1.data.output.prompt.split(',')[0], response1.data.output.prompt];
+        Logger.setLog(`Seems like ${prompt[0]}`)
+  
+        let response: any
+        try {
+          response = await axios.post(
+            STABLE_DIFFUSION_URL,
+            {
+              input: {
+                input: `data:image/png;base64,${dataUrl}`,
+                prompts: prompt[0],
+                strength: .85,
+                guidance_scale: 7.5,
+                split: 'none',
+                req_type: 'tile',
+              },
+            },
+            {
+              headers: { "Access-Control-Allow-Origin": "*" },
+              responseType: 'json',
+            }
+          );
+        } catch(e) {
+          Logger.setLog('Error: Diffusion Request Failed')
+          return
         }
-      );
 
-      const res = response.data.output.file[0][0]
-      return {res, prompt:['', '']};
+        Logger.setLog(`Image fetched!`)
+  
+        const res = response.data.output.file[0][0]
+        return {res, prompt:['', '']};
+
+      } catch(e) {
+        Logger.setLog('Error: dataURL conversion Failed')
+      }
       // return {res, prompt};
     }
+
+    Logger.setLog('Error: Image Not Found')
 }
 }
 
