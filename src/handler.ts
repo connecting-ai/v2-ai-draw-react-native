@@ -112,63 +112,54 @@ export class GestureManager {
     }
 
     async play(ref: SkiaView){
-        console.log('Play clicked');
+      console.log('Play clicked');
+      Logger.setLog('Loading...')
+      Logger.setLog('Getting Prompt')
+      try {
         const prompt = await this.getPrompt(ref) as any;
         console.log('prompt', prompt)
-        // const image = ref?.makeImageSnapshot();
-        // if (image) {          
-          // const dataUrl = image.encodeToBase64();
-          // const response = await axios.post(
-          //   STABLE_DIFFUSION_URL,
-          //   {
-          //     input: {
-          //       input: `data:image/png;base64,${dataUrl}`,
-          //       prompts: prompt[0],
-          //       strength: .85,
-          //       guidance_scale: 7.5,
-          //       split: 'none',
-          //       req_type: 'tile',
-          //     },
-          //   },
-          //   {
-          //     headers: { "Access-Control-Allow-Origin": "*" },
-          //     responseType: 'json',
-          //   }
-          // );
-
-          // const res = response.data.output.file[0][0]
-          // return {res, prompt:['', '']};
-          return {res: null, prompt};
-        // }
+        Logger.setLog(`Seems like ${prompt[0]}`)
+        return {res: null, prompt};
+      } catch(e) {
+        Logger.setLog('Error: Prompt Request Failed')
+      }
     }
 
     async playPrompt(ref: SkiaView, keyword: string){
       console.log('Play clicked');
+      Logger.setLog('Loading...')
       // const prompt = await this.getPrompt(ref) as any;
       // console.log('prompt', prompt)
       const image = ref?.makeImageSnapshot();
-      if (image) {          
+      if (image) {     
+        Logger.setLog('Getting dataURL')     
         const dataUrl = image.encodeToBase64();
-        const response = await axios.post(
-          STABLE_DIFFUSION_URL,
-          {
-            input: {
-              input: `data:image/png;base64,${dataUrl}`,
-              prompts: keyword,
-              strength: .85,
-              guidance_scale: 7.5,
-              split: 'none',
-              req_type: 'tile',
+        Logger.setLog('Fetched dataURL')
+        Logger.setLog(`Seems like ${keyword}`)
+        try {
+          const response = await axios.post(
+            STABLE_DIFFUSION_URL,
+            {
+              input: {
+                input: `data:image/png;base64,${dataUrl}`,
+                prompts: keyword,
+                strength: .85,
+                guidance_scale: 7.5,
+                split: 'none',
+                req_type: 'tile',
+              },
             },
-          },
-          {
-            headers: { "Access-Control-Allow-Origin": "*" },
-            responseType: 'json',
-          }
-        );
-
-        const res = response.data.output.file[0][0]
-        return {res, prompt:['', '']};
+            {
+              headers: { "Access-Control-Allow-Origin": "*" },
+              responseType: 'json',
+            }
+          );
+  
+          const res = response.data.output.file[0][0]
+          return {res, prompt:['', '']};
+        } catch (e) {
+          Logger.setLog('Error: Diffusion Request Failed')
+        }
         // return {res, prompt};
       }
   }

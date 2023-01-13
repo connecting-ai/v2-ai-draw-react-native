@@ -75,7 +75,6 @@ export default function ColorScreen({ navigation, route }:any) {
   async function play() {
     Logger.setLog('Loading...')
     await delay(2000)
-    setInterval(() => setStatus(Logger.getLog()), 500);
     // console.log(Skia)
     let image = route.params.image
     gm.uploadPrompt(ref.current as any, image).then(async ({res, prompt}:any) => {

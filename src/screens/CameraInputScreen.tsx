@@ -233,12 +233,14 @@ const CameraPreview = ({photo, retakePicture, savePhoto}: any) => {
             <Button
               mode="outlined"
               onPress={retakePicture}
+              style={{width: 'auto'}}
             >
               Re-Take
             </Button>
             <Button
               mode="contained"
               onPress={savePhoto}
+              style={{width: 'auto'}}
             >
               Continue
             </Button>

@@ -34,10 +34,13 @@ import BackButton from "../components/BackButton";
 import Background from "../components/Background";
 import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
+import Header from "../components/Header";
+import Logger from '../logger'
 
 
 export default function DrawScreen({ navigation, route }:any) {
   const { width, height } = Dimensions.get("window");
+  const [status, setStatus] = useState('');
 
   const paletteColors = ["red", "green", "blue", "yellow"];
 
@@ -73,30 +76,49 @@ export default function DrawScreen({ navigation, route }:any) {
     
     if(route && route.params && route.params.keywords && !image) {
       console.log('keywords', route.params.keywords)
+      Logger.setLog('Getting Image')
       gm.playPrompt(ref.current as any, route.params.keywords).then(async ({res, prompt}:any) => {
         //gm.canvas?.drawImage(img, 0,0);
-        const skdata = await Skia.Data.fromURI(res)
-        const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
-        ref.current?.redraw();
-        setImage(image);
-        setPrompt(prompt[1]);
-  
-        // Alert.prompt(prompt[0], prompt[1], [
-        //   {
-        //       onPress: str => console.log('Entered string: ' + str),
-        //   },
-        // ]
-        // );
+        try {
+          const skdata = await Skia.Data.fromURI(res)
+          const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
+          ref.current?.redraw();
+          setImage(image);
+          Logger.setLog('Drawing Image on Canvas')
+          setPrompt(prompt[1]);
+          Logger.setLog('')
+        } catch(e) {
+          Logger.setLog('Error: Image fetch request failed.')
+          console.log(e)
+        }
       });
     }
+    else {
+      Logger.setLog('')
+    }
   }
+
+  function getStatus() {
+    const interval = setInterval(() => setStatus(Logger.getLog()), 500);
+    return () => {
+      clearInterval(interval);
+    };
+  }
+
   useEffect(() => {
-    play2()
+    getStatus()
+    if(!image && !status && route && route.params && route.params.keywords) {
+      setStatus('Drawing Image')
+      Logger.setLog('Drawing Image')
+      play2()
+    }
   })
 
 
   const play = () => {
+    Logger.setLog('Loading...')
     gm.play(ref.current as any).then(async ({res, prompt}:any) => {
+      Logger.setLog('Getting Prompt')
       //gm.canvas?.drawImage(img, 0,0);
       // console.log('res')
       // try {
@@ -235,6 +257,12 @@ export default function DrawScreen({ navigation, route }:any) {
                   </TouchableOpacity>
                 ))}
               </Animated.View>
+              {status ?
+                <View style={styles.statusContainer}>
+                  <Header>Generating image, please wait ...</Header>
+                  <Text>Status: {status}</Text>
+                </View>
+                :
               <View style={styles.swatchContainer}>
                 <TouchableOpacity
                   onPress={() => {
@@ -292,6 +320,7 @@ export default function DrawScreen({ navigation, route }:any) {
 
 
               </View>
+              }
             </View>
           </View>
         </View>
@@ -302,6 +331,11 @@ export default function DrawScreen({ navigation, route }:any) {
 }
 
 const styles = StyleSheet.create({
+  statusContainer: {
+    flexDirection: "column",
+    flex: 1,
+    marginLeft: 15
+  },
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),

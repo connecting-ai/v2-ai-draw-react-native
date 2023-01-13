@@ -34,6 +34,8 @@ import BackButton from "../components/BackButton";
 import Background from "../components/Background";
 import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
+import Logger from '../logger'
+import Header from "../components/Header";
 
 
 export default function ColorScreen({ navigation, route }:any) {
@@ -52,6 +54,7 @@ export default function ColorScreen({ navigation, route }:any) {
   const [image, setImage] = useState<SkImage>();
   const ref = useCanvasRef();
   const [prompt, setPrompt] = useState('');
+  const [status, setStatus] = useState('');
 
 
 
@@ -73,20 +76,21 @@ export default function ColorScreen({ navigation, route }:any) {
     await delay(2000)
     // console.log(Skia)
     let keyword = route.params.answer
+    Logger.setLog('Getting Image')
     gm.playPrompt(ref.current as any, keyword).then(async ({res, prompt}:any) => {
       //gm.canvas?.drawImage(img, 0,0);
-      const skdata = await Skia.Data.fromURI(res)
-      const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
-      ref.current?.redraw();
-      setImage(image);
-      setPrompt(prompt[1]);
+      try {
+        const skdata = await Skia.Data.fromURI(res)
+        const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
+        ref.current?.redraw();
+        setImage(image);
+        Logger.setLog('Drawing Image on Canvas')
+        setPrompt(prompt[1]);
+        Logger.setLog('')
+      } catch(e) {
+        Logger.setLog('Error: Failed to draw image.')
+      }
 
-      // Alert.prompt(prompt[0], prompt[1], [
-      //   {
-      //       onPress: str => console.log('Entered string: ' + str),
-      //   },
-      // ]
-      // );
     });
   }
 
@@ -115,8 +119,17 @@ export default function ColorScreen({ navigation, route }:any) {
 
   const delay = (ms: any) => new Promise(res => setTimeout(res, ms));
 
+  function getStatus() {
+    const interval = setInterval(() => setStatus(Logger.getLog()), 500);
+    return () => {
+      clearInterval(interval);
+    };
+  }
+
   useEffect(() => {
-    if(!image) {
+    getStatus()
+    if(!image && !status && route.params.answer) {
+      Logger.setLog(`Drawing ${route.params.answer}`)
       play()
     }
   });
@@ -201,6 +214,12 @@ export default function ColorScreen({ navigation, route }:any) {
                   </TouchableOpacity>
                 ))}
               </Animated.View>
+              {status ?
+                <View style={styles.statusContainer}>
+                  <Header>Generating image, please wait ...</Header>
+                  <Text>Status: {status}</Text>
+                </View>
+                :
               <View style={styles.swatchContainer}>
                 <TouchableOpacity
                   onPress={() => {
@@ -258,6 +277,7 @@ export default function ColorScreen({ navigation, route }:any) {
 
 
               </View>
+              }
             </View>
           </View>
         </View>
@@ -268,6 +288,11 @@ export default function ColorScreen({ navigation, route }:any) {
 }
 
 const styles = StyleSheet.create({
+  statusContainer: {
+    flexDirection: "column",
+    flex: 1,
+    marginLeft: 15
+  },
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),
