@@ -36,6 +36,7 @@ import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 import Logger from '../logger'
 import Header from "../components/Header";
+import { uploadToS3 } from "../aws";
 
 
 export default function ColorScreen({ navigation, route }:any) {
@@ -80,7 +81,13 @@ export default function ColorScreen({ navigation, route }:any) {
     gm.playPrompt(ref.current as any, keyword).then(async ({res, prompt}:any) => {
       //gm.canvas?.drawImage(img, 0,0);
       try {
-        const skdata = await Skia.Data.fromURI(res)
+
+        Logger.setLog('Uploading to S3')
+        const S3_URL = await uploadToS3(res)
+        console.log('S3_URL', S3_URL)
+        Logger.setLog('Uploaded to S3')
+
+        const skdata = await Skia.Data.fromURI(S3_URL)
         const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
         ref.current?.redraw();
         setImage(image);
