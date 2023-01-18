@@ -36,7 +36,7 @@ import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 import Logger from '../logger'
 import Header from "../components/Header";
-import { uploadToS3 } from "../aws";
+import { getTempURI } from "../storage";
 
 
 export default function ColorScreen({ navigation, route }:any) {
@@ -56,6 +56,7 @@ export default function ColorScreen({ navigation, route }:any) {
   const ref = useCanvasRef();
   const [prompt, setPrompt] = useState('');
   const [status, setStatus] = useState('');
+  const [deleted, setDeleted] = useState(false);
 
 
 
@@ -76,14 +77,24 @@ export default function ColorScreen({ navigation, route }:any) {
   async function play() {
     await delay(2000)
     // console.log(Skia)
-    let keyword = route.params.answer
+    let keyword = ''
+    if(deleted) {
+      Logger.setLog('Loading...')
+      await gm.play(ref.current as any).then(async ({res, prompt}:any) => {
+        Logger.setLog('Getting Prompt')
+        keyword = prompt[1]
+        console.log(prompt)
+      });
+    } else {
+      keyword = route.params.answer
+    }
     Logger.setLog('Getting Image')
     gm.playPrompt(ref.current as any, keyword).then(async ({res, prompt}:any) => {
       //gm.canvas?.drawImage(img, 0,0);
       try {
 
         Logger.setLog('Uploading to S3')
-        const S3_URL = await uploadToS3(res)
+        const S3_URL = await getTempURI(res)
         console.log('S3_URL', S3_URL)
         Logger.setLog('Uploaded to S3')
 
@@ -104,6 +115,7 @@ export default function ColorScreen({ navigation, route }:any) {
   const clear = () =>{
     setPaths([]);
     setImage(undefined as any);
+    setDeleted(true)
   }
 
 
@@ -135,7 +147,7 @@ export default function ColorScreen({ navigation, route }:any) {
 
   useEffect(() => {
     getStatus()
-    if(!image && !status && route.params.answer) {
+    if(!deleted && !image && !status && route.params.answer) {
       Logger.setLog(`Drawing ${route.params.answer}`)
       play()
     }

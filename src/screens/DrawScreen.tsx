@@ -36,7 +36,7 @@ import Paragraph from "../components/Paragraph";
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 import Header from "../components/Header";
 import Logger from '../logger'
-import { uploadToS3 } from "../aws";
+import { getTempURI } from "../storage";
 
 
 export default function DrawScreen({ navigation, route }:any) {
@@ -54,6 +54,7 @@ export default function DrawScreen({ navigation, route }:any) {
   const [circles, setCircles] = useState<ICircle[]>([]);
   const [stamps, setStamps] = useState<IStamp[]>([]);
   const [image, setImage] = useState<SkImage>();
+  const [deleted, setDeleted] = useState(false);
   const ref = useCanvasRef();
   const [prompt, setPrompt] = useState('');
 
@@ -83,7 +84,7 @@ export default function DrawScreen({ navigation, route }:any) {
         try {
           
           Logger.setLog('Uploading to S3')
-          const S3_URL = await uploadToS3(res)
+          const S3_URL = await getTempURI(res)
           console.log('S3_URL', S3_URL)
           Logger.setLog('Uploaded to S3')
 
@@ -114,7 +115,7 @@ export default function DrawScreen({ navigation, route }:any) {
 
   useEffect(() => {
     getStatus()
-    if(!image && !status && route && route.params && route.params.keywords) {
+    if(!deleted && !image && !status && route && route.params && route.params.keywords) {
       setStatus('Drawing Image')
       Logger.setLog('Drawing Image')
       play2()
@@ -164,6 +165,7 @@ export default function DrawScreen({ navigation, route }:any) {
   const clear = () =>{
     setPaths([]);
     setImage(undefined as any);
+    setDeleted(true)
   }
 
 
