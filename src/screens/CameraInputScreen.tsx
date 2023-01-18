@@ -65,7 +65,7 @@ export default function CameraInput({ navigation }:any) {
     }
   }
   return (
-    <Background>
+    <View style={{ flex: 1, backgroundColor: 'black'}}>
     {/* <View style={styles.container}> */}
       <TouchableOpacity onPress={() => navigation.navigate('UploadInputScreen')}
         style={styles.container}>
@@ -76,9 +76,10 @@ export default function CameraInput({ navigation }:any) {
     </TouchableOpacity>
         <View
           style={{
-            // flex: 1,
-            width: '100%',
-            height: '85%'
+            flex: 1,
+            flexDirection: 'row'
+            // width: '100%',
+            // height: '85%'
           }}
         >
           {previewVisible && capturedImage ? (
@@ -87,10 +88,11 @@ export default function CameraInput({ navigation }:any) {
             <Camera
               type={cameraType}
               flashMode={flashMode}
-              style={{flex: 1}}
+              style={{flex: 1, aspectRatio: 0.5625}}
               ref={(r) => {
                 camera = r || new Camera()
               }}
+              ratio={'16:9'}
             >
               <View
                 style={{
@@ -104,7 +106,7 @@ export default function CameraInput({ navigation }:any) {
                   style={{
                     position: 'absolute',
                     left: '5%',
-                    top: '5%',
+                    top: '15%',
                     flexDirection: 'column',
                     justifyContent: 'space-between'
                   }}
@@ -182,7 +184,7 @@ export default function CameraInput({ navigation }:any) {
         </View>
       <StatusBar style="auto" />
     {/* </View> */}
-    </Background>
+    </View>
   )
 }
 
@@ -204,10 +206,10 @@ const CameraPreview = ({photo, retakePicture, savePhoto}: any) => {
   return (
     <View
       style={{
-        backgroundColor: 'transparent',
+        backgroundColor: 'black',
         flex: 1,
-        width: '100%',
-        height: '10%'
+        // width: '100%',
+        // height: '10%'
       }}
     >
       <ImageBackground

@@ -17,7 +17,7 @@ export default function ColorObjSelectScreen({ navigation, route }:any) {
   const submit = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'DrawScreen', params: {keywords: keywords.value, strength: strength.value, guidance_scale: guidance_scale.value} }],
+      routes: [{ name: 'DrawScreen', params: {keywords: keywords.value, strength: strength.value, guidance_scale: guidance_scale.value, firstImage: route.params.firstImage} }],
     })
   }
 

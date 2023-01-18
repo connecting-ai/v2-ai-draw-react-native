@@ -12,6 +12,8 @@ import {
   DrawScreen,
   GuessSelectScreen,
   GuessAnimalScreen,
+  GuessFruitScreen,
+  GuessVegetableScreen,
   CorrectAnswerScreen,
   ColorObjSelectScreen,
   ColorScreen,
@@ -40,6 +42,8 @@ export default function App() {
           <Stack.Screen name="DrawScreen" component={DrawScreen} />
           <Stack.Screen name="GuessSelectScreen" component={GuessSelectScreen} />
           <Stack.Screen name="GuessAnimalScreen" component={GuessAnimalScreen} />
+          <Stack.Screen name="GuessFruitScreen" component={GuessFruitScreen} />
+          <Stack.Screen name="GuessVegetableScreen" component={GuessVegetableScreen} />
           <Stack.Screen name="CorrectAnswerScreen" component={CorrectAnswerScreen} />
           <Stack.Screen name="ColorObjSelectScreen" component={ColorObjSelectScreen} />
           <Stack.Screen name="ColorScreen" component={ColorScreen} />

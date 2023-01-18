@@ -17,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, CameraType } from 'expo-camera';
 
 export default function ColorObjSelectScreen({ navigation }:any) {
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState<any>();
   const [type, setType] = useState(CameraType.back);
   const [permission, setPermission] = useState(false);
 

@@ -41,7 +41,7 @@ import { getTempURI } from "../storage";
 export default function ColorScreen({ navigation, route }:any) {
   const { width, height } = Dimensions.get("window");
 
-  const paletteColors = ["red", "green", "blue", "yellow"];
+  const paletteColors = ["red", "green", "blue", "yellow", "black"];
 
   const svgStar =
     '<svg class="star-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/xlink" viewBox="0 0 200 200"><polygon id="star" fill="{{fillColor}}" points="100,0,129.38926261462365,59.54915028125263,195.10565162951536,69.09830056250526,147.55282581475768,115.45084971874736,158.77852522924732,180.90169943749473,100,150,41.2214747707527,180.90169943749476,52.447174185242325,115.45084971874738,4.894348370484636,69.09830056250527,70.61073738537632,59.549150281252636"></polygon></svg>';
@@ -56,6 +56,7 @@ export default function ColorScreen({ navigation, route }:any) {
   const [prompt, setPrompt] = useState('');
   const [status, setStatus] = useState('');
   const [deleted, setDeleted] = useState(false);
+  const [color, setColor] = useState('black');
 
 
 
@@ -69,6 +70,7 @@ export default function ColorScreen({ navigation, route }:any) {
 
   const gm = new GestureManager({ pan, tap }, paths, setPaths, stamps, setStamps, circles, setCircles);
   gm.setTool(Tools.Pencil);
+  gm.setColor(color);
 
   
 
@@ -90,14 +92,15 @@ export default function ColorScreen({ navigation, route }:any) {
         //gm.canvas?.drawImage(img, 0,0);
         try {
   
-          Logger.setLog('Uploading to S3')
+          Logger.setLog('Saving to Temp')
           const S3_URL = await getTempURI(res)
           console.log('S3_URL', S3_URL)
-          Logger.setLog('Uploaded to S3')
+          Logger.setLog('Saved to Temp')
   
           const skdata = await Skia.Data.fromURI(S3_URL)
           const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
           ref.current?.redraw();
+          setPaths([]);
           setImage(image);
           Logger.setLog('Drawing Image on Canvas')
           setPrompt(prompt[1]);
@@ -114,15 +117,16 @@ export default function ColorScreen({ navigation, route }:any) {
         //gm.canvas?.drawImage(img, 0,0);
         try {
   
-          Logger.setLog('Uploading to S3')
+          Logger.setLog('Saving to Temp')
           const S3_URL = await getTempURI(res)
           console.log('S3_URL', S3_URL)
-          Logger.setLog('Uploaded to S3')
+          Logger.setLog('Saved to Temp')
           
           const skdata = await Skia.Data.fromURI(S3_URL)
           const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
   
           ref.current?.redraw();
+          setPaths([]);
           setImage(image);
           Logger.setLog('Drawing Image on Canvas')
   
@@ -202,16 +206,7 @@ export default function ColorScreen({ navigation, route }:any) {
                 {circles.map((c, index) => (
                   <Circle key={index} cx={c.x} cy={c.y} r={10} />
                 ))}
-                {paths.map((p, index) => (
-                  <Path
-                    key={index}
-                    path={p.segments.join(" ")}
-                    strokeWidth={5}
-                    style="stroke"
-                    color={p.color}
-                  />
-                ))}
-                  {image && (
+                {image && (
                   <Image
                     image={image}
                     fit="contain"
@@ -221,9 +216,18 @@ export default function ColorScreen({ navigation, route }:any) {
                     height={Dimensions.get('window').height}
                   />
                 )}
+                {paths.map((p, index) => (
+                  <Path
+                    key={index}
+                    path={p.segments.join(" ")}
+                    strokeWidth={5}
+                    style="stroke"
+                    color={p.color}
+                  />
+                ))}
                 <Group blendMode="multiply">
                   <Drawing
-                    drawing={({ canvas, paint, ref }) => {
+                    drawing={({ canvas, paint }) => {
                       // if(image){
                       //   canvas.clear(Skia.Color('white'));
                       //   setPaths([]);
@@ -250,6 +254,7 @@ export default function ColorScreen({ navigation, route }:any) {
                     onPress={() => {
                       // setActivePaletteColorIndex(i);
                       gm.setColor(paletteColors[i]);
+                      setColor(paletteColors[i]);
                       paletteVisible.value = false;
                     }}
                   >
@@ -281,7 +286,7 @@ export default function ColorScreen({ navigation, route }:any) {
                   <Animated.View
                     style={[
                       {
-                        backgroundColor: paletteColors[activePaletteColorIndex],
+                        backgroundColor: color,
                       },
                       styles.swatch,
                       animatedSwatchStyle,

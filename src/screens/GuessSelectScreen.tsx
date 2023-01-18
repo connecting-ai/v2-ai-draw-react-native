@@ -45,7 +45,7 @@ export default function GuessSelectScreen({ navigation }:any) {
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'GuessSelectScreen' }],
+            routes: [{ name: 'GuessFruitScreen' }],
           })
         }
       >
@@ -58,7 +58,7 @@ export default function GuessSelectScreen({ navigation }:any) {
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'GuessSelectScreen' }],
+            routes: [{ name: 'GuessVegetableScreen' }],
           })
         }
       >
