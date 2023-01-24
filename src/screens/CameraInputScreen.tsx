@@ -71,7 +71,7 @@ export default function CameraInput({ navigation }:any) {
         style={styles.container}>
         <ImageVan
           style={styles.image}
-          source={require('../assets/arrow_back.png')}
+          source={require('../assets/arrow_back_border_2.png')}
         />
     </TouchableOpacity>
         <View
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),
-    left: 4,
+    left: 16,
     zIndex: 1000
   },
   image: {

@@ -63,6 +63,12 @@ export default function GuessAnimalScreen({ navigation }:any) {
 
   const gm = new GestureManager({ pan, tap }, paths, setPaths, stamps, setStamps, circles, setCircles);
 
+  const clear = () =>{
+    setPaths([]);
+    setImage(undefined as any);
+    Logger.setLog('')
+  }
+
   async function play(keyword: string) {
     await delay(2000)
     // console.log(Skia)
@@ -107,7 +113,7 @@ export default function GuessAnimalScreen({ navigation }:any) {
 
   return (
     <Background>
-      <TouchableOpacity onPress={() => navigation.navigate('GuessSelectScreen')}
+      <TouchableOpacity onPress={() => {navigation.navigate('GuessSelectScreen'); clear()}}
           style={styles.container}>
           <ImageVan
             style={styles.image}
@@ -175,7 +181,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),
-    left: 4,
+    left: 16,
     zIndex: 1000
   },
   image: {

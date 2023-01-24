@@ -152,6 +152,7 @@ export default function ColorScreen({ navigation, route }:any) {
     setPaths([]);
     setImage(undefined as any);
     setDeleted(true)
+    Logger.setLog('')
   }
 
 
@@ -190,7 +191,7 @@ export default function ColorScreen({ navigation, route }:any) {
 
   return (
     <>
-      <TouchableOpacity onPress={() => navigation.navigate('ModeScreen')}
+      <TouchableOpacity onPress={() => {navigation.navigate('ModeScreen'); clear()}}
           style={styles.container}>
           <ImageVan
             style={styles.image}
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),
-    left: 4,
+    left: 16,
     zIndex: 1000
   },
   image: {

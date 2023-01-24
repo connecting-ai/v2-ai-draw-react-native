@@ -87,7 +87,7 @@ export default function DrawScreen({ navigation, route }:any) {
     if(route && route.params && route.params.keywords && !image) {
       console.log('keywords', route.params.keywords)
       Logger.setLog('Getting Image')
-      gm.playPrompt(ref.current as any, route.params.keywords).then(async ({res, prompt}:any) => {
+      gm.playPrompt(ref.current as any, route.params.keywords, route.params).then(async ({res, prompt}:any) => {
         //gm.canvas?.drawImage(img, 0,0);
         try {
           
@@ -180,6 +180,7 @@ export default function DrawScreen({ navigation, route }:any) {
     setPaths([]);
     setImage(undefined as any);
     setDeleted(true)
+    Logger.setLog('')
   }
 
   const resetImage = async () =>{
@@ -213,7 +214,7 @@ export default function DrawScreen({ navigation, route }:any) {
 
   return (
     <>
-      <TouchableOpacity onPress={() => navigation.navigate('ModeScreen')}
+      <TouchableOpacity onPress={() => {navigation.navigate('ModeScreen'); clear()}}
           style={styles.container}>
           <ImageVan
             style={styles.image}
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 10 + getStatusBarHeight(),
-    left: 4,
+    left: 16,
     zIndex: 1000
   },
   image: {

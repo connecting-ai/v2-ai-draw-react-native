@@ -22,7 +22,7 @@ export default function ModeScreen({ navigation }:any) {
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'GuessSelectScreen' }],
+            routes: [{ name: 'GuessAnimalScreen' }],
           })
         }
       >
