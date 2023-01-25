@@ -36,7 +36,7 @@ export default function ColorObjSelectScreen({ navigation }:any) {
     // }
     navigation.reset({
       index: 0,
-      routes: [{ name: 'ColorScreen', params: {answer: answer.value} }],
+      routes: [{ name: 'ColorScreen', params: {keywords: answer.value} }],
     })
   }
 

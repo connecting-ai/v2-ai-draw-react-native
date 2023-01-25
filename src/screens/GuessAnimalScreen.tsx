@@ -100,22 +100,18 @@ export default function GuessAnimalScreen({ navigation }:any) {
 
       <GestureHandlerRootView>
       <View style={styles.animalImg}>
-          {/* <GestureDetector gesture={gm.tap}> */}
-            {/* <GestureDetector gesture={gm.pan}> */}
-              <Canvas ref={ref} style={{ flex: 1 }} >
-                <Rect x={0} y={0} width={Dimensions.get('window').width} height={Dimensions.get('window').height} color="white" />
-                {paths.map((p, index) => (
-                  <Path
-                    key={index}
-                    path={p.segments.join(" ")}
-                    strokeWidth={5}
-                    style="stroke"
-                    color={p.color}
-                  />
-                ))}
-              </Canvas>
-            {/* </GestureDetector> */}
-          {/* </GestureDetector> */}
+        <Canvas ref={ref} style={{ flex: 1 }} >
+          <Rect x={0} y={0} width={Dimensions.get('window').width} height={Dimensions.get('window').height} color="white" />
+          {paths.map((p, index) => (
+            <Path
+              key={index}
+              path={p.segments.join(" ")}
+              strokeWidth={5}
+              style="stroke"
+              color={p.color}
+            />
+          ))}
+        </Canvas>
         </View>
       </GestureHandlerRootView>
 
@@ -125,9 +121,10 @@ export default function GuessAnimalScreen({ navigation }:any) {
 
         {
           options && options.length?
-          options.map((option: string) => {
+          options.map((option: string, index) => {
             return (
             <Chip
+            key={index}
             style={{marginRight: 10, backgroundColor: option == keyword && answer.value == option ? 'green' : answer.value == option ? theme.colors.error : theme.colors.light}}
             textStyle={{ color: 'white', fontSize: 18, padding: 3 }}
             onPress={() => setAnswerFn({ value: option, error: '' })}>

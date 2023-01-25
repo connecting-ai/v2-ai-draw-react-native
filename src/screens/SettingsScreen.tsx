@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View, Image as ImageVan, ScrollView } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Image as ImageVan, ScrollView, Dimensions } from 'react-native'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
@@ -21,7 +21,7 @@ export default function ColorObjSelectScreen({ navigation, route }:any) {
     { _id: '2', value: 'tile' },
     { _id: '3', value: 'none' },
   ],
-  selectedList: [] })
+  selectedList: [{ _id: '1', value: 'asset' }] })
   const [negative_prompt, setNegativePrompt] = useState({ value: 'ugly, contrast, 3D', error: '' })
   const [num_inference_steps, setNumInterfaceSteps] = useState({ value: '20', error: '' })
   const [cut_inner_tol, setCutInnerTol] = useState({ value: '7', error: '' })
@@ -30,25 +30,118 @@ export default function ColorObjSelectScreen({ navigation, route }:any) {
   const [sd_seed, setSdSeed] = useState({ value: '1024', error: '' })
 
   const submit = () => {
-    navigation.reset({
-      index: 0,
-      routes: [
-        { name: 'DrawScreen',
-          params: {
-            keywords: keywords.value, 
-            strength: strength.value, 
-            guidance_scale: guidance_scale.value, 
-            req_type: req_type.value, 
-            negative_prompt: negative_prompt.value, 
-            num_inference_steps: num_inference_steps.value, 
-            cut_inner_tol: cut_inner_tol.value, 
-            cut_outer_tol: cut_outer_tol.value, 
-            cut_radius: cut_radius.value, 
-            sd_seed: sd_seed.value, 
-            firstImage: route.params.firstImage
-          } 
-        }],
-    })
+
+    const isNumber = (x: any) => {
+    
+      x = parseFloat(x)
+  
+      // check if the passed value is a number
+      if(typeof x == 'number' && !isNaN(x)){
+      
+          // check if it is integer
+          if (Number.isInteger(x)) {
+              return true
+          }
+          else {
+              return true
+          }
+      
+      } else {
+          return false
+      }
+    }
+
+    const keywordsValidator = (value: any) => {
+      if (!value) return "Keywords can't be empty."
+      return ''
+    }
+    const reqTypeValidator = (value: any) => {
+      if (!value) return "Request type can't be empty."
+      return ''
+    }
+    const strengthValidator = (value: any) => {
+      if (!value) return "Strength can't be empty."
+      else if(!isNumber(value)) return "Strength can't be string, please enter a number."
+      return ''
+    }
+    const guidanceScaleValidator = (value: any) => {
+      if (!value) return "Guidance scale can't be empty."
+      else if(!isNumber(value)) return "Guidance scale can't be string, please enter a number."
+      return ''
+    }
+    const numInterfaceStepsValidator = (value: any) => {
+      if (!value) return "Num Interface steps can't be empty."
+      else if(!isNumber(value)) return "Num Interface steps can't be string, please enter a number."
+      return ''
+    }
+    const cutInnerTolValidator = (value: any) => {
+      if (!value) return "Cut Inner Tol can't be empty."
+      else if(!isNumber(value)) return "Cut Inner Tol can't be string, please enter a number."
+      return ''
+    }
+    const cutOuterTolValidator = (value: any) => {
+      if (!value) return "Cut Outer Tol can't be empty."
+      else if(!isNumber(value)) return "Cut Outer Tol can't be string, please enter a number."
+      return ''
+    }
+    const cutRadiusValidator = (value: any) => {
+      if (!value) return "Cut Radius can't be empty."
+      else if(!isNumber(value)) return "Cut Radius can't be string, please enter a number."
+      return ''
+    }
+    const sdSeedValidator = (value: any) => {
+      if (!value) return "SD Seed can't be empty."
+      else if(!isNumber(value)) return "SD Seed can't be string, please enter a number."
+      return ''
+    }
+
+    const keywordsError = keywordsValidator(keywords.value)
+    const reqTypeError = reqTypeValidator(req_type.value)
+    const strengthError = strengthValidator(strength.value)
+    const guidanceScaleError = guidanceScaleValidator(guidance_scale.value)
+    const numInterfaceStepsError = numInterfaceStepsValidator(num_inference_steps.value)
+    const cutInnerTolError = cutInnerTolValidator(cut_inner_tol.value)
+    const cutOuterTolError = cutOuterTolValidator(cut_outer_tol.value)
+    const cutRadiusError = cutRadiusValidator(cut_radius.value)
+    const sdSeedError = sdSeedValidator(sd_seed.value)
+
+    if (keywordsError || reqTypeError || strengthError || 
+      guidanceScaleError || numInterfaceStepsError || cutInnerTolError || 
+      cutOuterTolError || cutRadiusError || sdSeedError
+      ) {
+      setKeywords({ ...keywords, error: keywordsError })
+      setReqType({ ...req_type, error: reqTypeError })
+      setStrength({ ...strength, error: strengthError })
+      setGuidanceScale({ ...guidance_scale, error: guidanceScaleError })
+      setNumInterfaceSteps({ ...num_inference_steps, error: numInterfaceStepsError })
+      setCutInnerTol({ ...cut_inner_tol, error: cutInnerTolError })
+      setCutOuterTol({ ...cut_outer_tol, error: cutOuterTolError })
+      setCutRadius({ ...cut_radius, error: cutRadiusError })
+      setSdSeed({ ...sd_seed, error: sdSeedError })
+      return
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [
+          { name: 'DrawScreen',
+            params: {
+              keywords: keywords.value, 
+              strength: strength.value, 
+              guidance_scale: guidance_scale.value, 
+              req_type: req_type.value, 
+              negative_prompt: negative_prompt.value, 
+              num_inference_steps: num_inference_steps.value, 
+              cut_inner_tol: cut_inner_tol.value, 
+              cut_outer_tol: cut_outer_tol.value, 
+              cut_radius: cut_radius.value, 
+              sd_seed: sd_seed.value, 
+              firstImage: route.params.firstImage
+            } 
+          }],
+      })
+    }
+
+
   }
 
   return (
@@ -66,6 +159,7 @@ export default function ColorObjSelectScreen({ navigation, route }:any) {
       <Paragraph>Edit fields given below as per your need.</Paragraph>
 
       <ScrollView
+      style={{width: Dimensions.get('window').width, paddingLeft: 40, paddingRight: 40}}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}>
       <PaperSelect
