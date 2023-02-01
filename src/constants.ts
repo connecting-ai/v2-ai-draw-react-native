@@ -2,6 +2,9 @@ export const IMAGE_WIDTH = 1024;
 export const IMAGE_HEIGHT = 1024;
 export const STABLE_DIFFUSION_URL = "http://ai_prod.webaverse.studio/predictions";
 export const CLIP_URL = "http://clip.webaverse.ai/predictions";
+export const QUICK_DRAW_URL = "http://216.153.51.45:7000/predictions"
+export const WORDS_ASSOCIATION_API_KEY = "bdd2d9e3-4e75-4c94-825f-843591b8eb47"
+export const WORDS_ASSOCIATION_API = `https://api.wordassociations.net/associations/v1.0/json/search?apikey=${WORDS_ASSOCIATION_API_KEY}&lang=en&text=`
 export const IN_PAINT_URL = "/api/inpaint";
 export const AWS_ACCESS_ID = "AKIA55QGAZNYYWRIYGX4";
 export const AWS_SECRET_KEY = "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";

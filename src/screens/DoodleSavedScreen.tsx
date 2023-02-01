@@ -1,30 +1,30 @@
-import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, Image as ImageVan } from 'react-native'
+import React from 'react'
+import { TouchableOpacity, StyleSheet, View, Image as ImageVan } from 'react-native'
 import Background from '../components/Background'
-import CorrectAnswerImg from '../components/CorrectAnswerImg'
 import Header from '../components/Header'
 import Button from '../components/Button'
 import { theme } from '../core/theme'
 import { getStatusBarHeight } from 'react-native-status-bar-height'
+import SavedImage from '../components/SavedImage'
 
-export default function CorrectAnswerScreen({ navigation }:any) {
+export default function DoodleSavedScreen({ navigation, route }:any) {
 
   return (
     <Background>
-      <TouchableOpacity onPress={() => navigation.navigate('GuessSelectScreen')}
+      <TouchableOpacity onPress={() => navigation.navigate('DoodleScreen')}
           style={styles.container}>
           <ImageVan
             style={styles.image}
             source={require('../assets/arrow_back.png')}
           />
       </TouchableOpacity>
-      <Header>Correct Answer!</Header>
-      <CorrectAnswerImg/>
+      <Header>Doodle Saved!  🎉</Header>
+      <SavedImage image={route.params.image}/>
       <Button mode="contained" 
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'GuessSelectScreen' }],
+            routes: [{ name: 'DoodleScreen' }],
           })
         }
         >

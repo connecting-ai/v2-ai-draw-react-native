@@ -10,17 +10,18 @@ import {
   ResetPasswordScreen,
   ModeScreen,
   DrawScreen,
-  GuessSelectScreen,
-  GuessAnimalScreen,
-  GuessFruitScreen,
-  GuessVegetableScreen,
+  GuessScreen,
   CorrectAnswerScreen,
   ColorObjSelectScreen,
   ColorScreen,
   UploadInputScreen,
   UploadScreen,
   CameraInputScreen,
-  SettingsScreen
+  SettingsScreen,
+  DoodleScreen,
+  ExportAnswerScreen,
+  DoodleSavedScreen,
+  ExportableGallery
 } from './src/screens'
 
 const Stack = createStackNavigator()
@@ -40,10 +41,7 @@ export default function App() {
           <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           <Stack.Screen name="ModeScreen" component={ModeScreen} />
           <Stack.Screen name="DrawScreen" component={DrawScreen} />
-          <Stack.Screen name="GuessSelectScreen" component={GuessSelectScreen} />
-          <Stack.Screen name="GuessAnimalScreen" component={GuessAnimalScreen} />
-          <Stack.Screen name="GuessFruitScreen" component={GuessFruitScreen} />
-          <Stack.Screen name="GuessVegetableScreen" component={GuessVegetableScreen} />
+          <Stack.Screen name="GuessScreen" component={GuessScreen} />
           <Stack.Screen name="CorrectAnswerScreen" component={CorrectAnswerScreen} />
           <Stack.Screen name="ColorObjSelectScreen" component={ColorObjSelectScreen} />
           <Stack.Screen name="ColorScreen" component={ColorScreen} />
@@ -51,6 +49,10 @@ export default function App() {
           <Stack.Screen name="UploadScreen" component={UploadScreen} />
           <Stack.Screen name="CameraInputScreen" component={CameraInputScreen} />
           <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+          <Stack.Screen name="DoodleScreen" component={DoodleScreen} />
+          <Stack.Screen name="ExportAnswerScreen" component={ExportAnswerScreen} />
+          <Stack.Screen name="DoodleSavedScreen" component={DoodleSavedScreen} />
+          <Stack.Screen name="ExportableGallery" component={ExportableGallery} />
           <Stack.Screen
             name="ResetPasswordScreen"
             component={ResetPasswordScreen}

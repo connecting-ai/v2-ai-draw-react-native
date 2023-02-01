@@ -11,7 +11,7 @@ export default function ModeScreen({ navigation }:any) {
   return (
     <Background>
       <Logo />
-      <Header>Select Mode</Header>
+      {/* <Header>Select Mode</Header> */}
       {/* <Paragraph>
         Select Mode.
       </Paragraph> */}
@@ -22,7 +22,7 @@ export default function ModeScreen({ navigation }:any) {
         onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [{ name: 'GuessAnimalScreen' }],
+            routes: [{ name: 'GuessScreen' }],
           })
         }
       >
@@ -55,8 +55,21 @@ export default function ModeScreen({ navigation }:any) {
         Color
       </ButtonCard>
       <ButtonCard
-        icon="camera-plus"
+        icon="draw"
         style={{backgroundColor: "#bd08a0"}}
+        mode="contained"
+        onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'DoodleScreen' }],
+          })
+        }
+      >
+        Doodle
+      </ButtonCard>
+      <ButtonCard
+        icon="camera-plus"
+        style={{backgroundColor: "#a60c8d"}}
         mode="contained"
         onPress={() =>
           navigation.reset({

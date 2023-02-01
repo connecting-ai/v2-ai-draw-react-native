@@ -244,6 +244,48 @@ export class GestureManager {
 
     Logger.setLog('Error: Image Not Found')
   }
+
+  async getPromptFromUpload(uploadedImage: string){
+    Logger.setLog('Running Play function')
+
+    const image = uploadedImage
+
+    if (image) {      
+      Logger.setLog('Getting dataURL')
+      try {
+        const dataUrl = await FileSystem.readAsStringAsync(uploadedImage, { encoding: 'base64' });
+        Logger.setLog('Fetched dataURL')
+        Logger.setLog('Getting Prompt')
+  
+        let prompt_response: any;
+        try {
+  
+          prompt_response = await axios.post(
+            CLIP_URL,
+            {
+              input: {
+                input: `data:image/png;base64,${dataUrl}`,
+                mode: 'best',
+              },
+            },
+            {
+              headers: { "Access-Control-Allow-Origin": "*" },
+              responseType: 'json',
+            }
+          );
+  
+        } catch(e) {
+          Logger.setLog('Error: Prompt Request Failed')
+        }
+  
+        return [prompt_response.data.output.prompt.split(',')[0], prompt_response.data.output.prompt];
+      } catch(e) {
+        Logger.setLog('Error: dataURL conversion Failed')
+      }
+    }
+
+    Logger.setLog('Error: Image Not Found')
+  }
 }
 
 

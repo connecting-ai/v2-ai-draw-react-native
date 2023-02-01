@@ -119,23 +119,18 @@ export default function DrawScreen({ navigation, route }:any) {
     await delay(2000)
       let image = route.params.image
       try {
-        const fileURI = await gestureManager.getAiGeneratedImageFromUpload(image)
-        if(fileURI) {
-          if(!route.params.firstImage) {
-            Logger.setLog('Saving First Image URI')
-            setFirstImage(fileURI);
-          }
-          Logger.setLog('Drawing Image on Canvas')
-          const skdata = await Skia.Data.fromURI(fileURI)
-          const image = Skia.Image.MakeImageFromEncoded(skdata) as SkImage;
-          setPaths([]);
-          setImage(image);
-          Logger.setLog('')
-        } else {
-          Logger.setLog('Error: Invalid Image URI.')
+        const prompt = await gestureManager.getPromptFromUpload(image)
+        if(prompt && prompt.length) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'SettingsScreen', params:{ prompt: prompt[0], firstImage: firstImage} }],
+          })
+        }
+        else {
+          Logger.setLog('Error: Invalid Prompt')
         }
       } catch (e) {
-        Logger.setLog('Error: Failed to fetch image.')
+        Logger.setLog('Error: Failed to fetch prompt.')
       }
   }
 
